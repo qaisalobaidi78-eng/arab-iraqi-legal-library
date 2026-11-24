@@ -115,5 +115,7 @@ def legal_citation_template(jurisdiction: str, title: str, citation: str,
 
 
 if __name__ == "__main__":
+    if os.getenv("LEGAL_ENABLE_SERVER") != "true":
+        raise RuntimeError("Server deployment disabled")
     connect()
     mcp.run(transport="streamable-http")

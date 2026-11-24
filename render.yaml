@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: arab-iraqi-legal-library-mcp
+    runtime: docker
+    plan: free
+    envVars:
+      - key: MCP_HOST
+        value: 0.0.0.0

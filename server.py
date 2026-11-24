@@ -117,8 +117,24 @@ def legal_citation_template(jurisdiction: str, title: str, citation: str,
             "verified": False, "note": "بيانات التوثيق مقدمة من المستخدم ولم يتم التحقق منها"}
 
 
+class AccessGuard(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        key = os.getenv("LEGAL_API_KEY", "")
+        token = request.headers.get("Authorization", "")
+        if not key or not secrets.compare_digest(
+            token.encode(), f"Bearer {key}".encode()
+        ):
+            return JSONResponse({"error": "Unauthorized"}, status_code=401)
+        return await call_next(request)
+
 if __name__ == "__main__":
+    import uvicorn
     if os.getenv("LEGAL_ENABLE_SERVER") != "true":
         raise RuntimeError("Server deployment disabled")
-    connect()
-    mcp.run(transport="streamable-http")
+    if not os.getenv("LEGAL_API_KEY"):
+        raise RuntimeError("Missing API key")
+    connect().close()
+    app = mcp.streamable_http_app()
+    app.add_middleware(AccessGuard)
+    uvicorn.run(app, host=os.getenv("MCP_HOST", "127.0.0.1"),
+                port=int(os.getenv("PORT", "8000")))

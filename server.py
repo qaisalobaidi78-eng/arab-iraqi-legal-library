@@ -7,6 +7,7 @@ import json
 import os
 import secrets
 from starlette.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 import sqlite3
 import xml.etree.ElementTree as ET
 from pathlib import Path

@@ -6,6 +6,7 @@ an authorized operator and is NOT represented as independently verified.
 import json
 import os
 import secrets
+from starlette.responses import JSONResponse
 import sqlite3
 import xml.etree.ElementTree as ET
 from pathlib import Path
